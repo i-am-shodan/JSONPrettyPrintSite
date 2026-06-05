@@ -16,6 +16,8 @@
 
     // ---------- Theme ----------
     const THEME_KEY = 'jpp-theme';
+    const INPUT_KEY = 'jpp-input';
+    const INPUT_MAX_PERSIST = 2 * 1024 * 1024; // 2 MB cap — bigger inputs aren't auto-saved
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         try { localStorage.setItem(THEME_KEY, theme); } catch (_) { /* ignore */ }
@@ -334,6 +336,7 @@
         updateInputGutter();
         setOutput('', '');
         setStatus('', '');
+        persistInput();
         input.focus();
     }
 
@@ -351,6 +354,7 @@
         });
         updateInputGutter();
         prettyPrint();
+        persistInput();
     }
 
     async function pasteFromClipboard() {
@@ -363,6 +367,7 @@
             input.value = text;
             updateInputGutter();
             prettyPrint();
+            persistInput();
         } catch (e) {
             setStatus('Could not read clipboard: ' + (e && e.message ? e.message : e), 'error');
         }
@@ -408,7 +413,7 @@
             return;
         }
         const reader = new FileReader();
-        reader.onload = () => { input.value = String(reader.result || ''); updateInputGutter(); prettyPrint(); };
+        reader.onload = () => { input.value = String(reader.result || ''); updateInputGutter(); prettyPrint(); persistInput(); };
         reader.onerror = () => setStatus('Failed to read file.', 'error');
         reader.readAsText(file);
     }
@@ -535,11 +540,28 @@
     let liveTimer = null;
     function scheduleLiveFormat() {
         if (liveTimer) clearTimeout(liveTimer);
-        liveTimer = setTimeout(prettyPrint, 150);
+        liveTimer = setTimeout(() => { prettyPrint(); persistInput(); }, 150);
     }
     input.addEventListener('input', scheduleLiveFormat);
     indentSelect.addEventListener('change', prettyPrint);
     sortKeysCb.addEventListener('change', prettyPrint);
+
+    // ---------- Persist last-loaded document ----------
+    function persistInput() {
+        try {
+            const text = input.value;
+            if (!text) { localStorage.removeItem(INPUT_KEY); return; }
+            if (text.length > INPUT_MAX_PERSIST) { localStorage.removeItem(INPUT_KEY); return; }
+            localStorage.setItem(INPUT_KEY, text);
+        } catch (_) { /* quota exceeded or storage disabled — ignore */ }
+    }
+    function restoreInput() {
+        let saved = null;
+        try { saved = localStorage.getItem(INPUT_KEY); } catch (_) { return false; }
+        if (!saved) return false;
+        input.value = saved;
+        return true;
+    }
 
     // ---------- Input gutter (line numbers) ----------
     function updateInputGutter() {
@@ -555,5 +577,12 @@
     window.addEventListener('resize', updateInputGutter);
     updateInputGutter();
 
-    setStatus('Ready. Paste or type JSON — it validates and formats as you go.', 'info');
+    // Restore last-loaded document, if any.
+    if (restoreInput()) {
+        updateInputGutter();
+        prettyPrint();
+        setStatus('Restored last document from your browser.', 'info');
+    } else {
+        setStatus('Ready. Paste or type JSON — it validates and formats as you go.', 'info');
+    }
 })();
