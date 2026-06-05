@@ -43,13 +43,13 @@ python -m http.server 8080
 
     Azure will:
     - Create a `*.azurestaticapps.net` URL with HTTPS
-    - Add a workflow file to your repo *(if you let it — but we already include [.github/workflows/azure-static-web-apps.yml](.github/workflows/azure-static-web-apps.yml), so you can decline its file and instead copy the deployment token below)*
-    - Add a `AZURE_STATIC_WEB_APPS_API_TOKEN` secret to the GitHub repo.
+    - Commit a workflow file under `.github/workflows/` (named for your resource, e.g. [azure-static-web-apps-purple-rock-02cdd1e03.yml](.github/workflows/azure-static-web-apps-purple-rock-02cdd1e03.yml))
+    - Add a matching `AZURE_STATIC_WEB_APPS_API_TOKEN_*` secret to the GitHub repo.
 
 3. **If Azure didn't add the secret automatically**, grab it from the Portal:
     - Open your Static Web App → **Overview** → **Manage deployment token** → copy.
     - In GitHub: **Settings → Secrets and variables → Actions → New repository secret**
-        - Name: `AZURE_STATIC_WEB_APPS_API_TOKEN`
+        - Name: the `AZURE_STATIC_WEB_APPS_API_TOKEN_*` name referenced in the workflow file Azure committed.
         - Value: *(paste the token)*
 
 4. **Push to `main`.** The GitHub Action will deploy and your site goes live in ~1 minute.
@@ -75,7 +75,7 @@ The **Free** plan is $0/month. You only get charged if you switch to the **Stand
 ├── app.js                      # all logic (parse / format / minify / theme / clipboard / file IO)
 ├── staticwebapp.config.json    # SWA routing + security headers (CSP, X-Frame-Options, etc.)
 ├── .github/workflows/
-│   └── azure-static-web-apps.yml
+│   └── azure-static-web-apps-*.yml   # generated and maintained by Azure
 └── LICENSE
 ```
 
