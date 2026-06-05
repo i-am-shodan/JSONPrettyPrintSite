@@ -7,12 +7,14 @@
     const inputGutter = $('inputGutter');
     const output = $('output');
     const status = $('status');
+    const statusDock = $('statusDock');
     const pathDisplay = $('pathDisplay');
     const indentSelect = $('indentSelect');
     const sortKeysCb = $('sortKeys');
     const fileInput = $('fileInput');
 
     let rawOutput = '';
+    let topStatusVisible = true;
 
     // ---------- Theme ----------
     const THEME_KEY = 'jpp-theme';
@@ -38,6 +40,30 @@
     function setStatus(message, kind) {
         status.textContent = message || '';
         status.className = 'status' + (kind ? ' ' + kind : '');
+        statusDock.textContent = message || '';
+        statusDock.className = 'status status-dock' + (kind ? ' ' + kind : '');
+        updateStatusDock();
+    }
+    function updateStatusDock() {
+        statusDock.hidden = topStatusVisible || !status.textContent.trim();
+    }
+    function setupStatusDock() {
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                topStatusVisible = entries[0] ? entries[0].isIntersecting : true;
+                updateStatusDock();
+            }, { threshold: 0.01 });
+            observer.observe(status);
+            return;
+        }
+        const check = () => {
+            const rect = status.getBoundingClientRect();
+            topStatusVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+            updateStatusDock();
+        };
+        window.addEventListener('scroll', check, { passive: true });
+        window.addEventListener('resize', check);
+        check();
     }
 
     // ---------- HTML escaping ----------
@@ -576,6 +602,7 @@
     input.addEventListener('scroll', () => { inputGutter.scrollTop = input.scrollTop; });
     window.addEventListener('resize', updateInputGutter);
     updateInputGutter();
+    setupStatusDock();
 
     // Restore last-loaded document, if any.
     if (restoreInput()) {
