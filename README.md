@@ -2,6 +2,9 @@
 
 A free, **100% client-side** JSON pretty-printer, minifier and validator. No data ever leaves your browser — there is no backend.
 
+**Live site:** https://www.jsonpretty.co.uk/
+**Source:** https://github.com/i-am-shodan/JSONPrettyPrintSite
+
 ## Features
 
 - Pretty-print with 2-space, 4-space, or Tab indentation
