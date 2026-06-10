@@ -92,12 +92,10 @@ body {
     background: var(--surface-2);
     color: var(--text-muted);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 6px 10px;
+    border-radius: 999px;
+    padding: 4px 10px;
     font-size: 12px;
-    line-height: 1.35;
-    max-width: 320px;
-    text-align: right;
+    white-space: nowrap;
 }
 
 .icon-btn {
@@ -451,9 +449,16 @@ textarea::placeholder { color: var(--text-muted); opacity: 0.7; }
     color: var(--text-muted);
     border-top: 1px solid var(--border);
     background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 .footer a {
     color: var(--primary);
     text-decoration: none;
 }
 .footer a:hover { text-decoration: underline; }
+.footer-note {
+    opacity: 0.85;
+    font-size: 11px;
+}
