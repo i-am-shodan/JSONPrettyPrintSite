@@ -9,7 +9,7 @@
         "X-Frame-Options": "DENY",
         "Referrer-Policy": "no-referrer",
         "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
-        "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' https://www.clarity.ms https://*.clarity.ms; style-src 'self'; img-src 'self' data: https://*.clarity.ms https://c.bing.com; connect-src 'self' https://*.clarity.ms https://c.bing.com; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
     },
     "mimeTypes": {
         ".json": "application/json"
